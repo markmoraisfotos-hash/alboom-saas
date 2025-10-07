@@ -43,7 +43,29 @@ app.get('/', (req, res) => {
         <h1>🎉 AlboomProof SaaS</h1>
         <p class="status">✅ Sistema Online!</p>
         <p><strong>Versão:</strong> 2.1.0</p>
-       // Debug completo de environment
+        <p><strong>Porta:</strong> ${PORT}</p>
+        <div>
+            <a href="/health" class="btn">Health Check</a>
+            <a href="/test-db" class="btn">🗄️ Test Database</a>
+        </div>
+    </div>
+</body>
+</html>
+    `);
+});
+
+// Health check
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'OK',
+        message: 'Funcionando!',
+        timestamp: new Date().toISOString(),
+        uptime: Math.floor(process.uptime()),
+        port: PORT
+    });
+});
+
+// Debug completo de environment
 app.get('/test-db', (req, res) => {
     // Buscar database com qualquer nome possível
     const databaseUrl = process.env.DATABASE_URL || 
@@ -89,34 +111,6 @@ app.get('/test-db', (req, res) => {
             .sort()
     });
 });
-
-    res.json({
-        message: 'Debug completo de variáveis',
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV,
-        port: process.env.PORT,
-        // Verificações específicas
-        database_checks: {
-            DATABASE_URL_exists: !!process.env.DATABASE_URL,
-            DATABASE_URL_length: process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 0,
-            DATABASE_URL_starts_with: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'N/A'
-        },
-        // Todas as variáveis que começam com DB
-        db_variables: Object.keys(process.env)
-            .filter(key => key.toLowerCase().includes('db') || key.toLowerCase().includes('database'))
-            .reduce((obj, key) => {
-                obj[key] = process.env[key] ? '✅ SET (' + process.env[key].substring(0, 20) + '...)' : '❌ NOT SET';
-                return obj;
-            }, {}),
-        // Algumas outras variáveis importantes
-        other_vars: {
-            NODE_ENV: process.env.NODE_ENV,
-            PORT: process.env.PORT,
-            JWT_SECRET: process.env.JWT_SECRET ? '✅ SET' : '❌ NOT SET'
-        }
-    });
-});
-
 
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
