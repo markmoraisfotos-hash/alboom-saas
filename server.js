@@ -43,29 +43,53 @@ app.get('/', (req, res) => {
         <h1>🎉 AlboomProof SaaS</h1>
         <p class="status">✅ Sistema Online!</p>
         <p><strong>Versão:</strong> 2.1.0</p>
-        <p><strong>Porta:</strong> ${PORT}</p>
-        <div>
-            <a href="/health" class="btn">Health Check</a>
-        </div>
-    </div>
-</body>
-</html>
-    `);
-});
-
-// Health check
-app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'OK',
-        message: 'Funcionando!',
+       // Debug completo de environment
+app.get('/test-db', (req, res) => {
+    // Buscar database com qualquer nome possível
+    const databaseUrl = process.env.DATABASE_URL || 
+                       process.env.URL_DO_BANCO_DE_DADOS || 
+                       process.env.POSTGRES_URL ||
+                       process.env.POSTGRESQL_URL ||
+                       process.env.DB_URL;
+    
+    // Buscar JWT com qualquer nome possível  
+    const jwtSecret = process.env.JWT_SECRET || 
+                     process.env.SEGREDO_JWT ||
+                     process.env.JWT_SEGREDO;
+    
+    res.json({
+        message: 'Detecção completa de variáveis',
         timestamp: new Date().toISOString(),
-        uptime: Math.floor(process.uptime()),
-        port: PORT
+        found_variables: {
+            // Database URLs 
+            DATABASE_URL: !!process.env.DATABASE_URL,
+            URL_DO_BANCO_DE_DADOS: !!process.env.URL_DO_BANCO_DE_DADOS,
+            POSTGRES_URL: !!process.env.POSTGRES_URL,
+            POSTGRESQL_URL: !!process.env.POSTGRESQL_URL,
+            DB_URL: !!process.env.DB_URL,
+            // JWT Secrets
+            JWT_SECRET: !!process.env.JWT_SECRET,
+            SEGREDO_JWT: !!process.env.SEGREDO_JWT,
+            JWT_SEGREDO: !!process.env.JWT_SEGREDO
+        },
+        final_values: {
+            database_url_found: !!databaseUrl,
+            database_url_starts_with: databaseUrl ? databaseUrl.substring(0, 20) + '...' : 'N/A',
+            jwt_secret_found: !!jwtSecret
+        },
+        all_env_keys: Object.keys(process.env)
+            .filter(key => 
+                key.toLowerCase().includes('database') || 
+                key.toLowerCase().includes('banco') || 
+                key.toLowerCase().includes('postgres') ||
+                key.toLowerCase().includes('jwt') ||
+                key.toLowerCase().includes('segredo') ||
+                key.toLowerCase().includes('secret')
+            )
+            .sort()
     });
 });
 
-// Debug completo de environment
-app.get('/test-db', (req, res) => {
     res.json({
         message: 'Debug completo de variáveis',
         timestamp: new Date().toISOString(),
