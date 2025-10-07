@@ -63,14 +63,36 @@ app.get('/health', (req, res) => {
         port: PORT
     });
 });
+
+// Debug completo de environment
 app.get('/test-db', (req, res) => {
     res.json({
-        message: 'Rota test-db funcionando!',
+        message: 'Debug completo de variáveis',
         timestamp: new Date().toISOString(),
-        database_url: !!process.env.DATABASE_URL ? 'Configurado' : 'Não configurado',
-        environment: process.env.NODE_ENV
+        environment: process.env.NODE_ENV,
+        port: process.env.PORT,
+        // Verificações específicas
+        database_checks: {
+            DATABASE_URL_exists: !!process.env.DATABASE_URL,
+            DATABASE_URL_length: process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 0,
+            DATABASE_URL_starts_with: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'N/A'
+        },
+        // Todas as variáveis que começam com DB
+        db_variables: Object.keys(process.env)
+            .filter(key => key.toLowerCase().includes('db') || key.toLowerCase().includes('database'))
+            .reduce((obj, key) => {
+                obj[key] = process.env[key] ? '✅ SET (' + process.env[key].substring(0, 20) + '...)' : '❌ NOT SET';
+                return obj;
+            }, {}),
+        // Algumas outras variáveis importantes
+        other_vars: {
+            NODE_ENV: process.env.NODE_ENV,
+            PORT: process.env.PORT,
+            JWT_SECRET: process.env.JWT_SECRET ? '✅ SET' : '❌ NOT SET'
+        }
     });
 });
+
 
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
