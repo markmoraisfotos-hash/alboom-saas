@@ -1,90 +1,72 @@
-// Inicializar tabelas (rota especial)
-app.get('/api/init-tables', async (req, res) => {
-    try {
-        if (!pool) {
-            return res.status(500).json({ 
-                error: 'Pool PostgreSQL não inicializado'
-            });
-        }
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 8080;
 
-        const client = await pool.connect();
-        
-        console.log('🗄️  Criando tabelas...');
-        
-        // Criar tabelas uma por vez
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS photographers (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password_hash VARCHAR(255) NOT NULL,
-                studio_name VARCHAR(255),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS sessions (
-                id SERIAL PRIMARY KEY,
-                photographer_id INTEGER REFERENCES photographers(id) ON DELETE CASCADE,
-                title VARCHAR(255) NOT NULL,
-                client_name VARCHAR(255) NOT NULL,
-                client_email VARCHAR(255),
-                date DATE,
-                description TEXT,
-                client_token VARCHAR(255) UNIQUE NOT NULL,
-                status VARCHAR(50) DEFAULT 'active',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS photos (
-                id SERIAL PRIMARY KEY,
-                session_id INTEGER REFERENCES sessions(id) ON DELETE CASCADE,
-                filename VARCHAR(255) NOT NULL,
-                original_name VARCHAR(255),
-                s3_url TEXT,
-                thumbnail_url TEXT,
-                file_size INTEGER,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS photo_selections (
-                id SERIAL PRIMARY KEY,
-                photo_id INTEGER REFERENCES photos(id) ON DELETE CASCADE,
-                selected BOOLEAN DEFAULT false,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        
-        // Verificar tabelas criadas
-        const result = await client.query(`
-            SELECT table_name 
-            FROM information_schema.tables 
-            WHERE table_schema = 'public'
-            ORDER BY table_name
-        `);
-        
-        client.release();
-        
-        console.log('✅ Tabelas criadas com sucesso!');
-        
-        res.json({
-            success: true,
-            message: 'Tabelas criadas com sucesso!',
-            tables: result.rows.map(row => row.table_name),
-            timestamp: new Date().toISOString()
-        });
-        
-    } catch (error) {
-        console.error('❌ Erro ao criar tabelas:', error.message);
-        res.status(500).json({
-            success: false,
-            error: error.message,
-            timestamp: new Date().toISOString()
-        });
-    }
+console.log('🚀 AlboomProof iniciando...');
+console.log('📊 Porta:', PORT);
+console.log('🌐 Environment:', process.env.NODE_ENV);
+
+// Middleware básico
+app.use(express.json());
+app.use(express.static('public'));
+
+// Rota principal
+app.get('/', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>AlboomProof SaaS - Online</title>
+            <meta charset="utf-8">
+            <style>
+                body { 
+                    font-family: system-ui, -apple-system, sans-serif;
+                    margin: 0; padding: 50px; text-align: center;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white; min-height: 100vh;
+                    display: flex; align-items: center; justify-content: center;
+                }
+                .card { 
+                    background: rgba(255,255,255,0.95); color: #333;
+                    padding: 40px; border-radius: 20px; 
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                    max-width: 500px; width: 100%;
+                }
+                h1 { color: #667eea; margin-bottom: 20px; }
+                .status { color: #28a745; font-weight: bold; }
+                .info { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }
+                .btn { 
+                    display: inline-block; padding: 12px 24px; margin: 10px;
+                    background: #667eea; color: white; text-decoration: none;
+                    border-radius: 25px; transition: all 0.3s;
+                }
+                .btn:hover { background: #5a67d8; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h1>🎉 AlboomProof SaaS</h1>
+                <p class="status">✅ Sistema Online e Funcionando!</p>
+                
+                <div class="info">
+                    <strong>Status:</strong> Servidor Estável<br>
+                    <strong>Versão:</strong> 2.1.0 Básica<br>
+                    <strong>Plataforma:</strong> Railway<br>
+                    <strong>Porta:</strong> ${PORT}<br>
+                    <strong>Tempo:</strong> ${new Date().toLocaleString('pt-BR')}
+                </div>
+                
+                <div>
+                    <a href="/health" class="btn">🔍 Health Check</a>
+                    <a href="/status" class="btn">📊 Status Detalhado</a>
+                </div>
+                
+                <p><small>Request ID: ${Date.now()}</small></p>
+            </div>
+        </body>
+        </html>
+    `);
 });
+
+// Health check simples
+app.get('/health',<span class="cursor">█</span>
