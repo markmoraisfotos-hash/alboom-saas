@@ -2,36 +2,33 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-console.log('🚀 Iniciando servidor mínimo...');
+console.log('🚀 Servidor SEM database - teste...');
 
 // Rota básica
 app.get('/', (req, res) => {
-    res.send('AlboomProof Online - ' + new Date().toISOString());
+    res.send('AlboomProof Online SEM Database - ' + new Date().toISOString());
 });
 
-// Health check mínimo
+// Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'OK' });
-});
-
-// Teste de variável com nomes corretos
-app.get('/check-vars', (req, res) => {
-    res.json({
-        database_url: !!process.env.DATABASE_URL,     // Nome inglês correto
-        jwt_secret: !!process.env.JWT_SECRET,         // Nome inglês correto
-        vars_count: Object.keys(process.env).length,
-        // Debug completo
-        all_vars: Object.keys(process.env)
-            .filter(key => 
-                key.includes('DATABASE') || 
-                key.includes('JWT') || 
-                key.includes('SECRET')
-            )
-            .sort()
+    res.json({ 
+        status: 'OK',
+        message: 'Funcionando SEM database',
+        timestamp: new Date().toISOString()
     });
 });
 
-// Iniciar servidor
+// Teste sem database
+app.get('/test-simple', (req, res) => {
+    res.json({
+        message: 'Teste simples - sem database',
+        port: PORT,
+        env_count: Object.keys(process.env).length,
+        has_problematic_var: !!process.env.DATABASE_URL
+    });
+});
+
+// Servidor básico
 app.listen(PORT, () => {
-    console.log('✅ Online na porta ' + PORT);
+    console.log('✅ Servidor SIMPLES na porta ' + PORT);
 });
