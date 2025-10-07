@@ -14,16 +14,24 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK' });
 });
 
-// Teste de variável específica
+// Teste de variável com nomes corretos
 app.get('/check-vars', (req, res) => {
     res.json({
-        url_banco: !!process.env.URL_DO_BANCO_DE_DADOS,
-        jwt: !!process.env.JWT_SECRET,
-        vars_count: Object.keys(process.env).length
+        database_url: !!process.env.DATABASE_URL,     // Nome inglês correto
+        jwt_secret: !!process.env.JWT_SECRET,         // Nome inglês correto
+        vars_count: Object.keys(process.env).length,
+        // Debug completo
+        all_vars: Object.keys(process.env)
+            .filter(key => 
+                key.includes('DATABASE') || 
+                key.includes('JWT') || 
+                key.includes('SECRET')
+            )
+            .sort()
     });
 });
 
-// Iniciar com configurações Railway-friendly
+// Iniciar servidor
 app.listen(PORT, () => {
     console.log('✅ Online na porta ' + PORT);
 });
