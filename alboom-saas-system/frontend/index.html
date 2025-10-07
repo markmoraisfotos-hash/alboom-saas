@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlboomProof - Sistema de Seleção de Fotos</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header de Navegação -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-camera"></i>
+                <span>AlboomProof</span>
+            </div>
+            <nav class="nav">
+                <button id="loginBtn" class="btn-secondary">Login</button>
+                <button id="registerBtn" class="btn-primary">Cadastrar</button>
+                <div id="userMenu" class="user-menu hidden">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn-secondary">Sair</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div id="registerModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Cadastro de Fotógrafo</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Nome:</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Senha:</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerStudio">Nome do Estúdio:</label>
+                    <input type="text" id="registerStudio" required>
+                </div>
+                <button type="submit" class="btn-primary">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard do Fotógrafo -->
+    <div id="dashboard" class="dashboard hidden">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Meus Ensaios</h1>
+                <button id="newSessionBtn" class="btn-primary">
+                    <i class="fas fa-plus"></i> Nova Sessão
+                </button>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalSessions">0</h3>
+                        <p>Sessões Criadas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalPhotos">0</h3>
+                        <p>Fotos Enviadas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalSelections">0</h3>
+                        <p>Fotos Selecionadas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Sessões -->
+            <div class="sessions-list">
+                <div class="sessions-header">
+                    <h2>Suas Sessões</h2>
+                </div>
+                <div id="sessionsList" class="sessions-grid">
+                    <!-- Sessões serão carregadas aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nova Sessão -->
+    <div id="newSessionModal" class="modal hidden">
+        <div class="modal-content large">
+            <span class="close">&times;</span>
+            <h2>Nova Sessão de Fotos</h2>
+            <form id="newSessionForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sessionTitle">Título da Sessão:</label>
+                        <input type="text" id="sessionTitle" placeholder="Ex: Ensaio Pré-Wedding João e Maria" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientName">Nome do Cliente:</label>
+                        <input type="text" id="clientName" placeholder="Ex: João Silva" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientEmail">Email do Cliente:</label>
+                        <input type="email" id="clientEmail" placeholder="cliente@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sessionDate">Data do Ensaio:</label>
+                        <input type="date" id="sessionDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="sessionDescription">Descrição (opcional):</label>
+                    <textarea id="sessionDescription" placeholder="Detalhes sobre o ensaio, localização, etc."></textarea>
+                </div>
+
+                <!-- Upload de Fotos -->
+                <div class="upload-section">
+                    <h3>Upload de Fotos</h3>
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Arraste suas fotos aqui ou clique para selecionar</p>
+                        <p class="upload-info">Máximo 1500 fotos | JPG, PNG | Até 10MB por foto</p>
+                        <input type="file" id="photoUpload" accept="image/*" multiple hidden>
+                    </div>
+                    
+                    <div id="uploadProgress" class="upload-progress hidden">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p id="uploadStatus">Fazendo upload das fotos...</p>
+                    </div>
+
+                    <div id="uploadedPhotos" class="uploaded-photos hidden">
+                        <h4>Fotos Enviadas: <span id="photoCount">0</span></h4>
+                        <div id="photoGrid" class="photo-grid"></div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelSession">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="createSession">Criar Sessão</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sistema de Seleção de Fotos (Cliente) -->
+    <div id="clientSelection" class="client-selection hidden">
+        <div class="selection-header">
+            <div class="container">
+                <div class="session-info">
+                    <h1 id="selectionTitle">Seleção de Fotos</h1>
+                    <p id="selectionDescription">Selecione suas fotos favoritas</p>
+                </div>
+                <div class="selection-controls">
+                    <div class="filter-controls">
+                        <input type="text" id="searchFilter" placeholder="Buscar por nome...">
+                        <select id="filterBy">
+                            <option value="all">Todas as fotos</option>
+                            <option value="selected">Selecionadas</option>
+                            <option value="unselected">Não selecionadas</option>
+                        </select>
+                    </div>
+                    <div class="selection-stats">
+                        <span>Selecionadas: <strong id="selectedCount">0</strong></span>
+                        <button id="generateCodesBtn" class="btn-primary">
+                            <i class="fas fa-code"></i> Gerar Códigos Lightroom
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div id="photoGallery" class="photo-gallery">
+                <!-- Fotos serão carregadas aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Códigos Lightroom -->
+    <div id="codesModal" class="modal hidden">
+        <div class="modal-content large">
+            <span class="close">&times;</span>
+            <h2>Códigos para Lightroom Classic</h2>
+            <div class="codes-content">
+                <div class="instructions">
+                    <h3>Como usar:</h3>
+                    <ol>
+                        <li>Copie o código abaixo</li>
+                        <li>No Lightroom Classic, vá para o módulo Biblioteca</li>
+                        <li>Na barra de filtros superior, clique em "Texto"</li>
+                        <li>Cole o código no campo de busca</li>
+                        <li>As fotos selecionadas aparecerão automaticamente</li>
+                    </ol>
+                </div>
+                
+                <div class="code-section">
+                    <h4>Código de Filtro:</h4>
+                    <div class="code-box">
+                        <textarea id="lightroomCodes" readonly></textarea>
+                        <button id="copyCodesBtn" class="btn-secondary">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="selected-photos-summary">
+                    <h4>Fotos Selecionadas (<span id="summaryCount">0</span>):</h4>
+                    <div id="selectedPhotosList" class="selected-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
