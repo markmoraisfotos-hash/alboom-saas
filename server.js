@@ -40,3 +40,11 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
+
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 8080;
+
+// LINHA NOVA PARA FORÇAR DEPLOY
+console.log('🔥 VERSÃO NOVA - Timestamp:', Date.now());
+console.log('🚀 Servidor com health check manual...');
