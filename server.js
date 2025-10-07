@@ -63,6 +63,14 @@ app.get('/health', (req, res) => {
         port: PORT
     });
 });
+app.get('/test-db', (req, res) => {
+    res.json({
+        message: 'Rota test-db funcionando!',
+        timestamp: new Date().toISOString(),
+        database_url: !!process.env.DATABASE_URL ? 'Configurado' : 'Não configurado',
+        environment: process.env.NODE_ENV
+    });
+});
 
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
